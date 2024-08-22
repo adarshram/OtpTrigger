@@ -3,8 +3,13 @@ import "./App.css";
 import { auth, googleProvider, authLogout } from "./BaseConfig";
 import { signInWithPopup } from "firebase/auth";
 import DisplayOtps from "./pages/DisplayOtps";
+type User = {
+  uid: string | null;
+  displayName: string | null;
+  email: string | null;
+};
 function App() {
-  const [currentUser, setCurrentUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   const signInWithGoogle = async () => {
     try {

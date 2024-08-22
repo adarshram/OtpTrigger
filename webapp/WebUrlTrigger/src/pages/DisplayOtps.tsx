@@ -36,7 +36,7 @@ const fetchOtps = async () => {
 function DisplayOtps() {
   const [otps, setOtps] = useState([]);
   const [fetched, setFetched] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!fetched) {
@@ -72,8 +72,11 @@ function DisplayOtps() {
   const fetchOtpOnClick = async () => {
     setFetched(false);
   };
-  const getOtpFromText = (inputString: string) => {
+  const getOtpFromText = (inputString: string): string => {
     let code = copyOtp(inputString);
+    if (typeof code === "boolean") {
+      return "";
+    }
     return code;
   };
 
@@ -108,25 +111,28 @@ function DisplayOtps() {
             <Alert severity="warning">No OTPs found</Alert>
           </div>
         )}
-        {otps.map((otp, index) => (
-          <Box
-            key={index}
-            sx={{
-              userSelect: "text",
-            }}
-          >
-            {otp}
-            {copyOtp(otp) && (
-              <Button
-                onClick={() => {
-                  navigator.clipboard.writeText(getOtpFromText(otp));
-                }}
-              >
-                Copy {copyOtp(otp)}
-              </Button>
-            )}
-          </Box>
-        ))}
+        {otps.map((otp, index) => {
+          const canCopyOtp = copyOtp(otp);
+          return (
+            <Box
+              key={index}
+              sx={{
+                userSelect: "text",
+              }}
+            >
+              {otp}
+              {canCopyOtp !== false && (
+                <Button
+                  onClick={() => {
+                    navigator.clipboard.writeText(getOtpFromText(otp));
+                  }}
+                >
+                  Copy {copyOtp(otp)}
+                </Button>
+              )}
+            </Box>
+          );
+        })}
         <button onClick={fetchOtpOnClick}>
           <RefreshIcon />
         </button>
