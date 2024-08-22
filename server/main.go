@@ -7,6 +7,8 @@ import (
 	"log"
 	"net/http"
 	"url-trigger/database"
+
+	"os"
 )
 
 func Logger(s interface{}) {
@@ -30,8 +32,12 @@ func main() {
 	http.HandleFunc("/notifyOtp", func(w http.ResponseWriter, r *http.Request) {
 		otpHandler(w, r, Logger)
 	})
-	log.Println("Starting server1 on :8066")
-	if err := http.ListenAndServe(":8066", nil); err != nil {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8066"
+	}
+	log.Println("Starting server1 on :" + port)
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		log.Fatal(err)
 	}
 
@@ -88,7 +94,7 @@ func otpHandler(w http.ResponseWriter, r *http.Request, logFn func(interface{}))
 }
 
 func enableCors(w *http.ResponseWriter) {
-	(*w).Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
 	(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Authorization,Origin")
 }
